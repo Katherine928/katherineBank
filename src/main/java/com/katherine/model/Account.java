@@ -16,12 +16,24 @@ public class Account {
 //        this.accountLastName = accountLastName;
 //    }
 
-
-    public boolean checkAccount(List<String> accountInformation) {
-        return true;
+    public boolean checkBalance(double money) {
+        return money < balance;
+    }
+    public void depositMoneyToAccount(double money) {
+        this.balance = this.balance + money;
+    }
+    public void withdrawMoneyFromAccount(double money) {
+        this.balance = this.balance - money;
     }
 
-
+    public boolean transferMoney(double money) {
+        if(checkBalance(money)) {
+            this.balance = this.balance - money;
+            return true;
+        } else {
+            return false;
+        }
+    }
     public int getAccountId() {
         return accountId;
     }

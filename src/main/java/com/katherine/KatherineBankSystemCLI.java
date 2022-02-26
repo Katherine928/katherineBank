@@ -13,6 +13,12 @@ public class KatherineBankSystemCLI {
 
     private final UserInterface userInterface = new UserInterface(System.in);
     private final AccountDao accountDao;
+    private final String LOGIN = "1";
+    private final String CHECK_ACCOUNT_INFORMATION = "1";
+    private final String CREATE_ACCOUNT = "2";
+    private final String DEPOSIT = "2";
+    private final String WITHDRAW = "3";
+    private final String TRANSFER = "4";
 
     public static void main(String[] args) {
         BasicDataSource dataSource = new BasicDataSource();
@@ -34,23 +40,57 @@ public class KatherineBankSystemCLI {
         while (running) {
             userInterface.displayMainMenu();
             String mainChoice = userInterface.getChoiceFromUser();
-            if (mainChoice.equals("1")) {
+            if (mainChoice.equals(LOGIN)) {
                 List<String> userInformation = userInterface.getLoginInformationFromUser();
                 if(accountDao.checkAccount(userInformation)) {
-                    userInterface.displayWelcomeMessage(accountDao.getAccountByUserNameAndPassword(userInformation).getAccountFirstName());
+                    Account accountFind = accountDao.getAccountByUserNameAndPassword(userInformation);
+                    userInterface.displayWelcomeMessage(accountFind.getAccountFirstName());
                     while (true) {
                         userInterface.displaySubMenu();
                         String subMenuChoice = userInterface.getChoiceFromUser();
-                        if (subMenuChoice.equals("1")) {
-                            userInterface.displayAccountInformation(accountDao.getAccountByUserNameAndPassword(userInformation));
+                        switch (subMenuChoice) {
+                            case CHECK_ACCOUNT_INFORMATION:
+                                userInterface.displayAccountInformation(accountFind);
+                                break;
+                            case DEPOSIT:
+                                double depositMoney = userInterface.getDepositAmountFromUser();
+                                accountFind.depositMoneyToAccount(depositMoney);
+                                userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
+                                accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                break;
+                            case WITHDRAW:
+                                double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
+                                if (accountFind.checkBalance(moneyToWithdraw)) {
+                                    accountFind.withdrawMoneyFromAccount(moneyToWithdraw);
+                                    userInterface.displayWithdrawSuccessMessage(moneyToWithdraw, accountFind.getBalance());
+                                    accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                } else {
+                                    userInterface.displayNotEnoughMoneyMessage();
+                                }
+                                break;
+                            case TRANSFER:
+                                int transferAccountId = userInterface.getTransferAccountId();
+                                double transferAccountAmount = userInterface.getTransferAmount();
+                                if (accountFind.transferMoney(transferAccountAmount)) {
+                                    userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance());
+                                    accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                    accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
+                                } else {
+                                    userInterface.displayNotEnoughMoneyMessage();
+                                }
+                                break;
+                            default:
+                                userInterface.displayNotEnoughMoneyMessage();
+                                break;
                         }
-                    }
+                        }
+
                 } else {
                     userInterface.displayErrorMessage();
                 }
 
-            } else if (mainChoice.equals("2")) {
-
+            } else if (mainChoice.equals(CREATE_ACCOUNT)) {
+                userInterface.displayGoodbyeMessage();
             } else {
                 userInterface.displayErrorMessage();
                 userInterface.displayGoodbyeMessage();

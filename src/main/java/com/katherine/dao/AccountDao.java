@@ -11,4 +11,5 @@ public interface AccountDao {
     Account createAccount(Account newAccount);
     Account getAccountByUserNameAndPassword(List<String> accountInformation);
     boolean checkAccount(List<String> accountInformation);
+    void updateAccountById(int id, double newBalance);
 }

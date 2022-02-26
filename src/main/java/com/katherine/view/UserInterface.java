@@ -79,6 +79,47 @@ public class UserInterface {
         System.out.println(banner);
         System.out.println("---------------------------------------------------------------------------");
         System.out.println(accountInformation + "\n\n");
+    }
 
+    public double getDepositAmountFromUser() {
+        System.out.println("How much do you want to deposit?");
+        double depositMoney = Double.parseDouble(myScanner.nextLine());
+        return depositMoney;
+    }
+
+    public double getWithdrawAmountFromUser() {
+        System.out.println("How much do you want to withdraw?");
+        double withdrawMoney = Double.parseDouble(myScanner.nextLine());
+        return withdrawMoney;
+    }
+
+    public void displayDepositSuccessMessage(double moneyToDeposit, double balance) {
+        System.out.println("\n🥳 $" + moneyToDeposit + " is successfully deposited in your account, your current balance is: $" + balance);
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public void displayWithdrawSuccessMessage(double moneyToWithdraw, double balance) {
+        System.out.println("\n🥳 $" + moneyToWithdraw + " is successfully withdraw from your account, your current balance is: $" + balance);
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public void displayNotEnoughMoneyMessage() {
+        System.out.println("\n❌ Sorry, there is not enough money in the current account!");
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public void displayTransferSuccessMessage(double moneyToTransfer, double balance) {
+        System.out.println("\n🥳 $" + moneyToTransfer + " is successfully withdraw from your account, your current balance is: $" + balance);
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public int getTransferAccountId() {
+
+        System.out.println("What is the transfer account number?");
+        return Integer.parseInt(myScanner.nextLine());
+    }
+    public double getTransferAmount() {
+        System.out.println("What is the transfer amount?");
+        return Double.parseDouble(myScanner.nextLine());
     }
 }

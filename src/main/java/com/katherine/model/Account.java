@@ -11,10 +11,15 @@ public class Account {
     private String accountPassword;
     private double balance;
 
-//    public Account(String accountFirstName, String accountLastName) {
-//        this.accountFirstName = accountFirstName;
-//        this.accountLastName = accountLastName;
-//    }
+    public Account(int id, String accountFirstName, String accountLastName, String accountPassword) {
+        this.accountId = id;
+        this.accountFirstName = accountFirstName;
+        this.accountLastName = accountLastName;
+        this.accountPassword = accountPassword;
+        this.balance = 0;
+    }
+    public  Account() {
+    }
 
     public boolean checkBalance(double money) {
         return money < balance;

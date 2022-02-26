@@ -16,7 +16,7 @@ public class jdbcAccountDao implements AccountDao{
     }
 
     @Override
-    public Account getAccountByAccountId(int id) {
+    public Account getAccountByAccountId(int id){
         Account account = null;
         String sql = "SELECT account_id, account_first_name, account_last_name, account_user_name, balance FROM account WHERE account_id = ?";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
@@ -28,11 +28,11 @@ public class jdbcAccountDao implements AccountDao{
 
 
     @Override
-    public Account createAccount(Account newAccount) {
+    public int createAccount(String firstName, String lastName, String password, double balance){
         String sql = "INSERT INTO account(account_first_name, account_last_name, account_user_name, account_password, balance) \n" +
-                "VALUES (?, ?, ?, ?) RETURNING account_id";
-        int newId = jdbcTemplate.queryForObject(sql, Integer.class, newAccount.getAccountFirstName(), newAccount.getAccountLastName(), newAccount.getAccountUserName(), newAccount.getAccountPassword(), newAccount.getBalance());
-        return getAccountByAccountId(newId);
+                "VALUES (?, ?, ?, ?, ?) RETURNING account_id";
+       int id = jdbcTemplate.queryForObject(sql, Integer.class, firstName, lastName, "waitTOAssign", password, balance);
+       return id;
     }
 
     @Override
@@ -48,16 +48,31 @@ public class jdbcAccountDao implements AccountDao{
         return account;
     }
 
+
     @Override
     public boolean checkAccount(List<String> accountInformation) {
         Account account = getAccountByUserNameAndPassword(accountInformation);
         return account != null;
     }
 
+
+
     @Override
     public void updateAccountById(int id, double newBalance) {
-        String sql = "UPDATE account SET balance = ? WHERE account_id = ?";
-        jdbcTemplate.update(sql, newBalance, id);
+            String sql = "UPDATE account SET balance = ? WHERE account_id = ?";
+            jdbcTemplate.update(sql, newBalance, id);
+    }
+
+    @Override
+    public void updateUsernameById(int id, String newUserName) {
+        String sql = "UPDATE account SET account_user_name = ? WHERE account_id = ?";
+        jdbcTemplate.update(sql,newUserName, id);
+    }
+
+    @Override
+    public void deleteAccountById(int id) {
+        String sql = "DELETE FROM account WHERE account_id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
 

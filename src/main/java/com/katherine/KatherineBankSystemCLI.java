@@ -20,7 +20,8 @@ public class KatherineBankSystemCLI {
     private final String WITHDRAW = "3";
     private final String QUIT = "3";
     private final String TRANSFER = "4";
-    private final String BACK_TO_MAIN = "5";
+    private final String DELETE_ACCOUNT = "5";
+    private final String BACK_TO_MAIN = "6";
 
     public static void main(String[] args) {
         BasicDataSource dataSource = new BasicDataSource();
@@ -67,14 +68,24 @@ public class KatherineBankSystemCLI {
                         } else if (subMenuChoice.equals(TRANSFER)) {
                             int transferAccountId = userInterface.getTransferAccountId();
                             double transferAccountAmount = userInterface.getTransferAmount();
-                            if (accountFind.transferMoney(transferAccountAmount)) {
-                                userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance());
-                                accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                                accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
+                            Account accountTransfer = accountDao.getAccountByAccountId(transferAccountId);
+                            if (accountTransfer == null) {
+                                userInterface.displayAccountNotFoundErrorMessage(transferAccountId);
                             } else {
-                                userInterface.displayNotEnoughMoneyMessage();
+                                if (accountFind.transferMoney(transferAccountAmount)) {
+                                    accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                    accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
+                                    userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance(), transferAccountId);
+                                } else {
+                                    userInterface.displayNotEnoughMoneyMessage();
+                                }
                             }
-                        } else if (subMenuChoice.equals(BACK_TO_MAIN)) {
+                        } else if (subMenuChoice.equals(DELETE_ACCOUNT)) {
+                            accountDao.deleteAccountById(accountFind.getAccountId());
+                            userInterface.displayAccountDeleteMessage();
+                            break;
+                        }
+                        else if (subMenuChoice.equals(BACK_TO_MAIN)) {
                             break;
                         } else {
                             userInterface.displayErrorMessage();
@@ -83,9 +94,16 @@ public class KatherineBankSystemCLI {
                 } else {
                     userInterface.displayWrongLoginMessage();
                 }
-
             } else if (mainChoice.equals(CREATE_ACCOUNT)) {
-                userInterface.displayGoodbyeMessage();
+                List<String> accountInfo = userInterface.getNewAccountInformation();
+                if (accountInfo != null) {
+                    int newAccountId = accountDao.createAccount(accountInfo.get(0), accountInfo.get(1), accountInfo.get(2), Double.parseDouble(accountInfo.get(3)));
+                    Account newAccount = new Account(newAccountId, accountInfo.get(0),accountInfo.get(1), accountInfo.get(2));
+                    accountDao.updateUsernameById(newAccountId, newAccount.getAccountUserName());
+                    userInterface.displayCreateAccountSuccessMessage(newAccount);
+                } else {
+                    System.out.println("Password and confirm password does not match!");
+                }
             } else if (mainChoice.equals(QUIT)) {
                 userInterface.displayGoodbyeMessage();
                 running = false;

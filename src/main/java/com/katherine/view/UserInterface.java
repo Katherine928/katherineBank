@@ -24,7 +24,7 @@ public class UserInterface {
         System.out.println(" */");
         System.out.println("\nWelcome to Katherine Bank!");
         System.out.println("* * * * * * * * * * *\n");
-        System.out.println("Hi, I am Katherine 💁 Your virtual Customer Service!");
+        System.out.println("Hi, I am Katherine 🥰 Your virtual Customer Service!");
         System.out.println("What can I do for you today?\n");
     }
 
@@ -67,11 +67,12 @@ public class UserInterface {
     }
 
     public void displaySubMenu() {
-        System.out.println("1) Check account information");
+        System.out.println("1) Check Account Information");
         System.out.println("2) Deposit");
         System.out.println("3) Withdraw");
         System.out.println("4) Transfer");
-        System.out.println("5) Back to main menu");
+        System.out.println("5) Delete Account");
+        System.out.println("6) Back to main menu");
     }
 
     public void displayAccountInformation(Account account) {
@@ -106,13 +107,28 @@ public class UserInterface {
     }
 
     public void displayNotEnoughMoneyMessage() {
-        System.out.println("\n❌ Sorry, there is not enough money in the current account!");
+        System.out.println("\n‼️ Sorry, there is not enough money in the current account!");
         System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
     }
 
-    public void displayTransferSuccessMessage(double moneyToTransfer, double balance) {
-        System.out.println("\n🥳 $" + moneyToTransfer + " is successfully withdraw from your account, your current balance is: $" + balance);
+    public void displayAccountDeleteMessage() {
+        System.out.println("\n✔️ Your account has been successfully deleted. We will miss you!");
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");
+    }
+
+    public void displayTransferSuccessMessage(double moneyToTransfer, double balance, int accountId) {
+        System.out.println("\n🥳 $" + moneyToTransfer + " is successfully transferred to account #" + accountId + ", your current balance is: $" + balance);
         System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public void displayCreateAccountSuccessMessage(Account newAccount) {
+        System.out.println("\n🥳 Account have been successfully created. Here is your account number and account username\n");
+        System.out.println("---------------------------------------------------------------------------");
+        String successfulMessageFormat = String.format("%-20s %-20s", "Account#", "Username");
+        System.out.println(successfulMessageFormat);
+        System.out.println("---------------------------------------------------------------------------");
+        String successfulMessage = String.format("%-20s %-20s", newAccount.getAccountId(), newAccount.getAccountUserName()+"\n");
+        System.out.println(successfulMessage);
     }
 
     public int getTransferAccountId() {
@@ -125,7 +141,36 @@ public class UserInterface {
         return Double.parseDouble(myScanner.nextLine());
     }
     public void displayWrongLoginMessage() {
-        System.out.println("\n❌ Wrong username Or password");
+        System.out.println("\n‼️ Wrong username Or password");
         System.out.println("* * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+    public void displayAccountNotFoundErrorMessage(int id) {
+        System.out.println("‼️ Sorry! Account#: " + id + " Not Found!");
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * *\n");;
+    }
+
+
+    public List<String> getNewAccountInformation() {
+        List<String> newAccountInfo = new ArrayList<>();
+        System.out.println("What is your first name?");
+        String first_name = myScanner.nextLine();
+        first_name = first_name.substring(0,1).toUpperCase() + first_name.substring(1).toLowerCase();
+        System.out.println("What is your last name?");
+        String last_name = myScanner.nextLine();
+        last_name = last_name.substring(0,1).toUpperCase() + last_name.substring(1).toLowerCase();
+        System.out.println("What is your password?");
+        String password = myScanner.nextLine();
+        System.out.println("Please Confirm your password:");
+        String passwordConfirm = myScanner.nextLine();
+        System.out.println("How much money do you want to put in the account?");
+        String startBalance = myScanner.nextLine();
+        if (password.equals(passwordConfirm)) {
+            newAccountInfo.add(first_name);
+            newAccountInfo.add(last_name);
+            newAccountInfo.add(password);
+            newAccountInfo.add(startBalance);
+        }
+        return newAccountInfo;
     }
 }

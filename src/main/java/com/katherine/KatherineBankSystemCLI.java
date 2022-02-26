@@ -18,7 +18,9 @@ public class KatherineBankSystemCLI {
     private final String CREATE_ACCOUNT = "2";
     private final String DEPOSIT = "2";
     private final String WITHDRAW = "3";
+    private final String QUIT = "3";
     private final String TRANSFER = "4";
+    private final String BACK_TO_MAIN = "5";
 
     public static void main(String[] args) {
         BasicDataSource dataSource = new BasicDataSource();
@@ -48,50 +50,47 @@ public class KatherineBankSystemCLI {
                     while (true) {
                         userInterface.displaySubMenu();
                         String subMenuChoice = userInterface.getChoiceFromUser();
-                        switch (subMenuChoice) {
-                            case CHECK_ACCOUNT_INFORMATION:
-                                userInterface.displayAccountInformation(accountFind);
-                                break;
-                            case DEPOSIT:
-                                double depositMoney = userInterface.getDepositAmountFromUser();
-                                accountFind.depositMoneyToAccount(depositMoney);
-                                userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
+                        if (subMenuChoice.equals(CHECK_ACCOUNT_INFORMATION)) {
+                            userInterface.displayAccountInformation(accountFind);
+                        } else if (subMenuChoice.equals(DEPOSIT)) {
+                            double depositMoney = userInterface.getDepositAmountFromUser();
+                            accountFind.depositMoneyToAccount(depositMoney);
+                            userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
+                            accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                        } else if (subMenuChoice.equals(WITHDRAW)) {
+                            double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
+                            if (accountFind.checkBalance(moneyToWithdraw)) {
+                                accountFind.withdrawMoneyFromAccount(moneyToWithdraw);
+                                userInterface.displayWithdrawSuccessMessage(moneyToWithdraw, accountFind.getBalance());
                                 accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                                break;
-                            case WITHDRAW:
-                                double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
-                                if (accountFind.checkBalance(moneyToWithdraw)) {
-                                    accountFind.withdrawMoneyFromAccount(moneyToWithdraw);
-                                    userInterface.displayWithdrawSuccessMessage(moneyToWithdraw, accountFind.getBalance());
-                                    accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                                } else {
-                                    userInterface.displayNotEnoughMoneyMessage();
-                                }
-                                break;
-                            case TRANSFER:
-                                int transferAccountId = userInterface.getTransferAccountId();
-                                double transferAccountAmount = userInterface.getTransferAmount();
-                                if (accountFind.transferMoney(transferAccountAmount)) {
-                                    userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance());
-                                    accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                                    accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
-                                } else {
-                                    userInterface.displayNotEnoughMoneyMessage();
-                                }
-                                break;
-                            default:
+                            }
+                        } else if (subMenuChoice.equals(TRANSFER)) {
+                            int transferAccountId = userInterface.getTransferAccountId();
+                            double transferAccountAmount = userInterface.getTransferAmount();
+                            if (accountFind.transferMoney(transferAccountAmount)) {
+                                userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance());
+                                accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
+                            } else {
                                 userInterface.displayNotEnoughMoneyMessage();
-                                break;
+                            }
+                        } else if (subMenuChoice.equals(BACK_TO_MAIN)) {
+                            break;
+                        } else {
+                            userInterface.displayErrorMessage();
                         }
-                        }
-
+                    }
                 } else {
-                    userInterface.displayErrorMessage();
+                    userInterface.displayWrongLoginMessage();
                 }
 
             } else if (mainChoice.equals(CREATE_ACCOUNT)) {
                 userInterface.displayGoodbyeMessage();
-            } else {
+            } else if (mainChoice.equals(QUIT)) {
+                userInterface.displayGoodbyeMessage();
+                running = false;
+            }
+            else {
                 userInterface.displayErrorMessage();
                 userInterface.displayGoodbyeMessage();
                 running = false;

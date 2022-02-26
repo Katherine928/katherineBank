@@ -34,13 +34,14 @@ public class UserInterface {
     }
     public void displayMainMenu() {
         System.out.println("1) Login");
-        System.out.println("2) Create new account\n");
+        System.out.println("2) Create new account");
+        System.out.println("3) Quit\n");
     }
     public void displayErrorMessage() {
         System.out.println("Error 💥: The information you just entered is not valid, please come back and try again!\n");
     }
     public void displayGoodbyeMessage() {
-        System.out.println("Thanks for choose Katherine Bank! Have a great Day ❤");
+        System.out.println("Thanks for choosing Katherine Bank! Have a great Day ❤");
         System.out.println("/***");
         System.out.println(" *      _____ _              _    __   __        ");
         System.out.println(" *     |_   _| |_  __ _ _ _ | |__ \\ \\ / /__ _  _ ");
@@ -70,6 +71,7 @@ public class UserInterface {
         System.out.println("2) Deposit");
         System.out.println("3) Withdraw");
         System.out.println("4) Transfer");
+        System.out.println("5) Back to main menu");
     }
 
     public void displayAccountInformation(Account account) {
@@ -121,5 +123,9 @@ public class UserInterface {
     public double getTransferAmount() {
         System.out.println("What is the transfer amount?");
         return Double.parseDouble(myScanner.nextLine());
+    }
+    public void displayWrongLoginMessage() {
+        System.out.println("\n❌ Wrong username Or password");
+        System.out.println("* * * * * * * * * * * * * * * * * * *\n");;
     }
 }

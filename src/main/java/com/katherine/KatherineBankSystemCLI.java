@@ -1,18 +1,23 @@
 package com.katherine;
 
 import com.katherine.dao.AccountDao;
+import com.katherine.dao.HistoryDao;
 import com.katherine.dao.jdbcAccountDao;
+import com.katherine.dao.jdbcHistoryDao;
 import com.katherine.model.Account;
+import com.katherine.model.History;
 import com.katherine.view.UserInterface;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.List;
 
 public class KatherineBankSystemCLI {
 
     private final UserInterface userInterface = new UserInterface(System.in);
     private final AccountDao accountDao;
+    private final HistoryDao historyDao;
     private final String LOGIN = "1";
     private final String CHECK_ACCOUNT_INFORMATION = "1";
     private final String CREATE_ACCOUNT = "2";
@@ -34,6 +39,7 @@ public class KatherineBankSystemCLI {
 
     public KatherineBankSystemCLI(DataSource dataSource) {
         accountDao = new jdbcAccountDao(dataSource);
+        historyDao = new jdbcHistoryDao(dataSource);
 
     }
 
@@ -53,17 +59,24 @@ public class KatherineBankSystemCLI {
                         String subMenuChoice = userInterface.getChoiceFromUser();
                         if (subMenuChoice.equals(CHECK_ACCOUNT_INFORMATION)) {
                             userInterface.displayAccountInformation(accountFind);
+                            String showHistory = userInterface.askForHistory();
+                            if(showHistory.equals("Y")) {
+                                List<History> histories = historyDao.getHistoryById(accountFind.getAccountId());
+                                userInterface.displayTransactionHistory(histories);
+                            }
                         } else if (subMenuChoice.equals(DEPOSIT)) {
                             double depositMoney = userInterface.getDepositAmountFromUser();
                             accountFind.depositMoneyToAccount(depositMoney);
                             userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
                             accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                            historyDao.createHistory(accountFind.getAccountId(),"DEPOSIT", LocalDate.now(),depositMoney);
                         } else if (subMenuChoice.equals(WITHDRAW)) {
                             double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
                             if (accountFind.checkBalance(moneyToWithdraw)) {
                                 accountFind.withdrawMoneyFromAccount(moneyToWithdraw);
                                 userInterface.displayWithdrawSuccessMessage(moneyToWithdraw, accountFind.getBalance());
                                 accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                historyDao.createHistory(accountFind.getAccountId(),"WITHDRAW", LocalDate.now(),moneyToWithdraw);
                             }
                         } else if (subMenuChoice.equals(TRANSFER)) {
                             int transferAccountId = userInterface.getTransferAccountId();
@@ -77,6 +90,8 @@ public class KatherineBankSystemCLI {
                                     accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
                                     accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
                                     userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance(), transferAccountId, transferAccountName.get(0).toUpperCase());
+                                    historyDao.createHistory(accountFind.getAccountId(),"TRANSFER", LocalDate.now(),transferAccountAmount);
+                                    historyDao.createHistory(transferAccountId,"RECEIVE", LocalDate.now(),transferAccountAmount);
                                 } else {
                                     userInterface.displayNotEnoughMoneyMessage();
                                 }

@@ -1,6 +1,7 @@
 package com.katherine.view;
 
 import com.katherine.model.Account;
+import com.katherine.model.History;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -157,10 +158,9 @@ public class UserInterface {
     }
 
     public void displayAccountNotFoundErrorMessage() {
-        System.out.println("‼️ Sorry! We didn't find the account, please check the account number or account name!");
+        System.out.println("\n‼️ Sorry! We didn't find the account, please check the account number or account name!");
         System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
     }
-
 
     public List<String> getNewAccountInformation() {
         List<String> newAccountInfo = new ArrayList<>();
@@ -183,5 +183,22 @@ public class UserInterface {
             newAccountInfo.add(startBalance);
         }
         return newAccountInfo;
+    }
+
+    public String askForHistory() {
+        System.out.println("\nShow 30 day Transaction History? (Y/N)\n");
+        return myScanner.nextLine().toUpperCase();
+    }
+
+    public void displayTransactionHistory(List<History> histories) {
+        System.out.println("---------------------------------------------------------------------------");
+        String historyBanner = String.format("%-20s %-20s %-20s", "Date", "Message","Amount");
+        System.out.println(historyBanner);
+        System.out.println("---------------------------------------------------------------------------");
+        for(History history: histories) {
+            String historyFormat = String.format("%-20s %-20s $%-20s",history.getHistoryDate(),history.getHistoryMessage(),history.getHistoryAmount());
+            System.out.println(historyFormat + "\n");
+        }
+        System.out.println("\n");
     }
 }

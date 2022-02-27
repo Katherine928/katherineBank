@@ -72,7 +72,7 @@ public class UserInterface {
         System.out.println("3) Withdraw");
         System.out.println("4) Transfer");
         System.out.println("5) Delete Account");
-        System.out.println("6) Back to main menu");
+        System.out.println("6) log Out");
     }
 
     public void displayAccountInformation(Account account) {
@@ -116,8 +116,9 @@ public class UserInterface {
         System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");
     }
 
-    public void displayTransferSuccessMessage(double moneyToTransfer, double balance, int accountId) {
-        System.out.println("\n🥳 $" + moneyToTransfer + " is successfully transferred to account #" + accountId + ", your current balance is: $" + balance);
+    public void displayTransferSuccessMessage(double moneyToTransfer, double balance, int accountId, String name) {
+        System.out.println("\n🥳   " + name + " received your $" + moneyToTransfer + "!");
+        System.out.println("✔️ $" + moneyToTransfer + " is successfully transferred to account #" + accountId + ", your current balance is: $" + balance);
         System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
     }
 
@@ -136,6 +137,16 @@ public class UserInterface {
         System.out.println("What is the transfer account number?");
         return Integer.parseInt(myScanner.nextLine());
     }
+    public List<String> getTransferName() {
+        List<String> transferAccountName = new ArrayList<>();
+        System.out.println("What is the fist name for the account?");
+        String firstName = myScanner.nextLine();
+        System.out.println("What is the last name for the account?");
+        String lastName = myScanner.nextLine();
+        transferAccountName.add(firstName);
+        transferAccountName.add(lastName);
+        return transferAccountName;
+    }
     public double getTransferAmount() {
         System.out.println("What is the transfer amount?");
         return Double.parseDouble(myScanner.nextLine());
@@ -145,9 +156,9 @@ public class UserInterface {
         System.out.println("* * * * * * * * * * * * * * * * * * *\n");;
     }
 
-    public void displayAccountNotFoundErrorMessage(int id) {
-        System.out.println("‼️ Sorry! Account#: " + id + " Not Found!");
-        System.out.println("* * * * * * * * * * * * * * * * * * * * * * *\n");;
+    public void displayAccountNotFoundErrorMessage() {
+        System.out.println("‼️ Sorry! We didn't find the account, please check the account number or account name!");
+        System.out.println("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n");;
     }
 
 

@@ -21,7 +21,7 @@ public class KatherineBankSystemCLI {
     private final String QUIT = "3";
     private final String TRANSFER = "4";
     private final String DELETE_ACCOUNT = "5";
-    private final String BACK_TO_MAIN = "6";
+    private final String LOGOUT = "6";
 
     public static void main(String[] args) {
         BasicDataSource dataSource = new BasicDataSource();
@@ -67,15 +67,16 @@ public class KatherineBankSystemCLI {
                             }
                         } else if (subMenuChoice.equals(TRANSFER)) {
                             int transferAccountId = userInterface.getTransferAccountId();
-                            double transferAccountAmount = userInterface.getTransferAmount();
+                            List<String> transferAccountName = userInterface.getTransferName();
                             Account accountTransfer = accountDao.getAccountByAccountId(transferAccountId);
-                            if (accountTransfer == null) {
-                                userInterface.displayAccountNotFoundErrorMessage(transferAccountId);
+                            if (accountTransfer == null || !accountTransfer.getAccountFirstName().equalsIgnoreCase(transferAccountName.get(0)) || !accountTransfer.getAccountLastName().equalsIgnoreCase(transferAccountName.get(1))) {
+                                userInterface.displayAccountNotFoundErrorMessage();
                             } else {
+                                double transferAccountAmount = userInterface.getTransferAmount();
                                 if (accountFind.transferMoney(transferAccountAmount)) {
                                     accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
                                     accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
-                                    userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance(), transferAccountId);
+                                    userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance(), transferAccountId, transferAccountName.get(0).toUpperCase());
                                 } else {
                                     userInterface.displayNotEnoughMoneyMessage();
                                 }
@@ -85,7 +86,7 @@ public class KatherineBankSystemCLI {
                             userInterface.displayAccountDeleteMessage();
                             break;
                         }
-                        else if (subMenuChoice.equals(BACK_TO_MAIN)) {
+                        else if (subMenuChoice.equals(LOGOUT)) {
                             break;
                         } else {
                             userInterface.displayErrorMessage();

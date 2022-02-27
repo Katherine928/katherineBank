@@ -40,7 +40,6 @@ public class KatherineBankSystemCLI {
     public KatherineBankSystemCLI(DataSource dataSource) {
         accountDao = new jdbcAccountDao(dataSource);
         historyDao = new jdbcHistoryDao(dataSource);
-
     }
 
     public void run() {
@@ -70,6 +69,7 @@ public class KatherineBankSystemCLI {
                             userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
                             accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
                             historyDao.createHistory(accountFind.getAccountId(),"DEPOSIT", LocalDate.now(),depositMoney);
+
                         } else if (subMenuChoice.equals(WITHDRAW)) {
                             double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
                             if (accountFind.checkBalance(moneyToWithdraw)) {

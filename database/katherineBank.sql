@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS history;
 
@@ -22,6 +23,20 @@ CREATE TABLE history (
 )
 
 INSERT INTO account (account_first_name, account_last_name, account_user_name, account_password, balance )
-values('Katherine', 'Brooks', 'KBROOKS1', '123456', 1000);
+VALUES('Katherine', 'Brooks', 'KBROOKS1', '123456', 1000);
 INSERT INTO account (account_first_name, account_last_name, account_user_name, account_password, balance )
-values('Lilian', 'Smith', 'LSMITH2', '123abc', 500);
+VALUES('Lilian', 'Smith', 'LSMITH2', '123abc', 500);
+
+INSERT INTO history(account_id, history_message, history_date, history_amount) 
+VALUES(1,'DEPOSIT','2022-02-12',50);
+INSERT INTO history(account_id, history_message, history_date, history_amount) 
+VALUES(1,'DEPOSIT','2022-02-13',50);
+INSERT INTO history(account_id, history_message, history_date, history_amount) 
+VALUES(1,'TRANSFER','2022-02-14',50);
+
+INSERT INTO history(account_id, history_message, history_date, history_amount) 
+VALUES(2,'WITHDRAW','2022-02-12',50);
+INSERT INTO history(account_id, history_message, history_date, history_amount) 
+VALUES(2,'REVEIVE','2022-02-12',50);
+
+COMMIT;

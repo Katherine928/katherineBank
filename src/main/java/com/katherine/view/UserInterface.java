@@ -2,6 +2,7 @@ package com.katherine.view;
 
 import com.katherine.model.Account;
 import com.katherine.model.History;
+import com.katherine.util.InvalidInputException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -85,9 +86,10 @@ public class UserInterface {
         System.out.println(accountInformation + "\n\n");
     }
 
-    public double getDepositAmountFromUser() {
+    public double getDepositAmountFromUser(){
         System.out.println("How much do you want to deposit?");
-        double depositMoney = Double.parseDouble(myScanner.nextLine());
+        double depositMoney;
+        depositMoney = Double.parseDouble(myScanner.nextLine());
         return depositMoney;
     }
 
@@ -200,5 +202,9 @@ public class UserInterface {
             System.out.println(historyFormat + "\n");
         }
         System.out.println("\n");
+    }
+
+    public void displayInvalidInputMessage() {
+        System.out.println("\n ‼️Invalid Money Input!\n");
     }
 }

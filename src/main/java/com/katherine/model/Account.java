@@ -1,5 +1,8 @@
 package com.katherine.model;
 
+import com.katherine.util.InvalidInputException;
+import com.katherine.util.NotEnoughBalanceException;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -21,8 +24,15 @@ public class Account {
     public  Account() {
     }
 
-    public boolean checkBalance(double money) {
-        return money < balance;
+    public void checkBalance(double money) throws NotEnoughBalanceException {
+        if (money > balance) {
+            throw new NotEnoughBalanceException();
+        }
+    }
+    public void checkMoneyInput(double money) throws InvalidInputException {
+        if (money < 0) {
+            throw new InvalidInputException();
+        }
     }
     public void depositMoneyToAccount(double money) {
         this.balance = this.balance + money;
@@ -31,13 +41,10 @@ public class Account {
         this.balance = this.balance - money;
     }
 
-    public boolean transferMoney(double money) {
-        if(checkBalance(money)) {
-            this.balance = this.balance - money;
-            return true;
-        } else {
-            return false;
-        }
+    public void transferMoney(double money) {
+
+        this.balance = this.balance - money;
+
     }
     public int getAccountId() {
         return accountId;

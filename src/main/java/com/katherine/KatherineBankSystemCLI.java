@@ -6,6 +6,9 @@ import com.katherine.dao.jdbcAccountDao;
 import com.katherine.dao.jdbcHistoryDao;
 import com.katherine.model.Account;
 import com.katherine.model.History;
+import com.katherine.util.AccountNotFoundException;
+import com.katherine.util.InvalidInputException;
+import com.katherine.util.NotEnoughBalanceException;
 import com.katherine.view.UserInterface;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -50,7 +53,8 @@ public class KatherineBankSystemCLI {
             String mainChoice = userInterface.getChoiceFromUser();
             if (mainChoice.equals(LOGIN)) {
                 List<String> userInformation = userInterface.getLoginInformationFromUser();
-                if(accountDao.checkAccount(userInformation)) {
+                try {
+                    accountDao.checkAccountByUserNameAndPassword(userInformation);
                     Account accountFind = accountDao.getAccountByUserNameAndPassword(userInformation);
                     userInterface.displayWelcomeMessage(accountFind.getAccountFirstName());
                     while (true) {
@@ -65,18 +69,29 @@ public class KatherineBankSystemCLI {
                             }
                         } else if (subMenuChoice.equals(DEPOSIT)) {
                             double depositMoney = userInterface.getDepositAmountFromUser();
-                            accountFind.depositMoneyToAccount(depositMoney);
-                            userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
-                            accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                            historyDao.createHistory(accountFind.getAccountId(),"DEPOSIT", LocalDate.now(),depositMoney);
+                            try {
+                                accountFind.checkMoneyInput(depositMoney);
+                                accountFind.depositMoneyToAccount(depositMoney);
+                                userInterface.displayDepositSuccessMessage(depositMoney, accountFind.getBalance());
+                                accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
+                                historyDao.createHistory(accountFind.getAccountId(),"DEPOSIT", LocalDate.now(),depositMoney);
+                            } catch (InvalidInputException e) {
+                                userInterface.displayInvalidInputMessage();
+                            }
 
                         } else if (subMenuChoice.equals(WITHDRAW)) {
                             double moneyToWithdraw = userInterface.getWithdrawAmountFromUser();
-                            if (accountFind.checkBalance(moneyToWithdraw)) {
+                            try {
+                                accountFind.checkMoneyInput(moneyToWithdraw);
+                                accountFind.checkBalance(moneyToWithdraw);
                                 accountFind.withdrawMoneyFromAccount(moneyToWithdraw);
                                 userInterface.displayWithdrawSuccessMessage(moneyToWithdraw, accountFind.getBalance());
                                 accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
-                                historyDao.createHistory(accountFind.getAccountId(),"WITHDRAW", LocalDate.now(),moneyToWithdraw);
+                                historyDao.createHistory(accountFind.getAccountId(), "WITHDRAW", LocalDate.now(), moneyToWithdraw);
+                            } catch (NotEnoughBalanceException e) {
+                                userInterface.displayNotEnoughMoneyMessage();
+                            } catch (InvalidInputException e) {
+                                userInterface.displayInvalidInputMessage();
                             }
                         } else if (subMenuChoice.equals(TRANSFER)) {
                             int transferAccountId = userInterface.getTransferAccountId();
@@ -86,13 +101,19 @@ public class KatherineBankSystemCLI {
                                 userInterface.displayAccountNotFoundErrorMessage();
                             } else {
                                 double transferAccountAmount = userInterface.getTransferAmount();
-                                if (accountFind.transferMoney(transferAccountAmount)) {
+                                try {
+                                    accountFind.checkMoneyInput(transferAccountAmount);
+                                    accountFind.checkBalance(transferAccountAmount);
+                                    accountFind.transferMoney(transferAccountAmount);
                                     accountDao.updateAccountById(accountFind.getAccountId(), accountFind.getBalance());
                                     accountDao.updateAccountById(transferAccountId, accountDao.getAccountByAccountId(transferAccountId).getBalance() + transferAccountAmount);
                                     userInterface.displayTransferSuccessMessage(transferAccountAmount, accountFind.getBalance(), transferAccountId, transferAccountName.get(0).toUpperCase());
-                                    historyDao.createHistory(accountFind.getAccountId(),"TRANSFER", LocalDate.now(),transferAccountAmount);
-                                    historyDao.createHistory(transferAccountId,"RECEIVE", LocalDate.now(),transferAccountAmount);
-                                } else {
+                                    historyDao.createHistory(accountFind.getAccountId(), "TRANSFER", LocalDate.now(), transferAccountAmount);
+                                    historyDao.createHistory(transferAccountId, "RECEIVE", LocalDate.now(), transferAccountAmount);
+
+                                } catch (InvalidInputException e) {
+                                    userInterface.displayInvalidInputMessage();
+                                } catch (NotEnoughBalanceException e) {
                                     userInterface.displayNotEnoughMoneyMessage();
                                 }
                             }
@@ -107,7 +128,7 @@ public class KatherineBankSystemCLI {
                             userInterface.displayErrorMessage();
                         }
                     }
-                } else {
+                } catch (AccountNotFoundException e){
                     userInterface.displayWrongLoginMessage();
                 }
             } else if (mainChoice.equals(CREATE_ACCOUNT)) {

@@ -1,6 +1,5 @@
 package com.katherine.dao;
 
-import com.katherine.model.Account;
 import com.katherine.model.History;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;

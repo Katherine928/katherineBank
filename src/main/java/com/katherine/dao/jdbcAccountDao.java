@@ -2,6 +2,7 @@ package com.katherine.dao;
 
 import com.katherine.model.Account;
 
+import com.katherine.util.AccountNotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -50,11 +51,12 @@ public class jdbcAccountDao implements AccountDao{
 
 
     @Override
-    public boolean checkAccount(List<String> accountInformation) {
-        Account account = getAccountByUserNameAndPassword(accountInformation);
-        return account != null;
-    }
+    public void checkAccountByUserNameAndPassword(List<String> accountInformation) throws AccountNotFoundException {
+        if (getAccountByUserNameAndPassword(accountInformation) == null) {
+            throw new AccountNotFoundException();
+        }
 
+    }
 
 
     @Override

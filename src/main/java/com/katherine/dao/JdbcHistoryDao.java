@@ -9,19 +9,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class jdbcHistoryDao implements HistoryDao {
+public class JdbcHistoryDao implements HistoryDao {
 
 
     private final JdbcTemplate jdbcTemplate;
 
-    public jdbcHistoryDao(DataSource dataSource) {
+    public JdbcHistoryDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
     public List<History> getHistoryById(int id) {
         List<History> histories = new ArrayList<>();
-        String sql = "SELECT history_id, history_message, history_date, history_amount FROM history WHERE account_id = ? AND history_date >= ? -30";
+        String sql = "SELECT history_id, account_id, history_message, history_date, history_amount FROM history WHERE account_id = ? AND history_date >= ? -30 ORDER BY history_id";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id, LocalDate.now());
         while (result.next()) {
             histories.add(mapRowToHistory(result));

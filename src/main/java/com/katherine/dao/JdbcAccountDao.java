@@ -9,17 +9,17 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import javax.sql.DataSource;
 import java.util.List;
 
-public class jdbcAccountDao implements AccountDao{
+public class JdbcAccountDao implements AccountDao{
     private final JdbcTemplate jdbcTemplate;
 
-    public jdbcAccountDao(DataSource dataSource) {
+    public JdbcAccountDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
     public Account getAccountByAccountId(int id){
         Account account = null;
-        String sql = "SELECT account_id, account_first_name, account_last_name, account_user_name, balance FROM account WHERE account_id = ?";
+        String sql = "SELECT account_id, account_first_name, account_last_name, account_password, account_user_name, balance FROM account WHERE account_id = ?";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql, id);
         if (result.next()) {
             account = mapRowToAccount(result);
@@ -41,7 +41,7 @@ public class jdbcAccountDao implements AccountDao{
         Account account = null;
         String username = accountInformation.get(0).toUpperCase();
         String password = accountInformation.get(1);
-        String sql = "SELECT account_id, account_first_name, account_last_name, account_user_name, balance FROM account WHERE account_user_name = ? AND account_password = ?";
+        String sql = "SELECT account_id, account_first_name, account_last_name, account_user_name, account_password, balance FROM account WHERE account_user_name = ? AND account_password = ?";
         SqlRowSet result = jdbcTemplate.queryForRowSet(sql,username, password);
         if(result.next()) {
             account = mapRowToAccount(result);
@@ -73,6 +73,8 @@ public class jdbcAccountDao implements AccountDao{
 
     @Override
     public void deleteAccountById(int id) {
+        String sql1 = "DELETE FROM history WHERE account_id = ?";
+        jdbcTemplate.update(sql1, id);
         String sql = "DELETE FROM account WHERE account_id = ?";
         jdbcTemplate.update(sql, id);
     }
@@ -83,6 +85,7 @@ public class jdbcAccountDao implements AccountDao{
         account.setAccountId(rowSet.getInt("account_id"));
         account.setAccountFirstName(rowSet.getString("account_first_name"));
         account.setAccountLastName(rowSet.getString("account_last_name"));
+        account.setAccountPassword(rowSet.getString("account_password"));
         account.setAccountUserName(rowSet.getString("account_user_name"));
         account.setBalance(rowSet.getDouble("balance"));
         return account;

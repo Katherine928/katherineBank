@@ -2,8 +2,8 @@ package com.katherine;
 
 import com.katherine.dao.AccountDao;
 import com.katherine.dao.HistoryDao;
-import com.katherine.dao.jdbcAccountDao;
-import com.katherine.dao.jdbcHistoryDao;
+import com.katherine.dao.JdbcAccountDao;
+import com.katherine.dao.JdbcHistoryDao;
 import com.katherine.model.Account;
 import com.katherine.model.History;
 import com.katherine.util.AccountNotFoundException;
@@ -41,8 +41,8 @@ public class KatherineBankSystemCLI {
     }
 
     public KatherineBankSystemCLI(DataSource dataSource) {
-        accountDao = new jdbcAccountDao(dataSource);
-        historyDao = new jdbcHistoryDao(dataSource);
+        accountDao = new JdbcAccountDao(dataSource);
+        historyDao = new JdbcHistoryDao(dataSource);
     }
 
     public void run() {

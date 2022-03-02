@@ -6,11 +6,12 @@ public class History {
 
 
     private int historyId;
+    private int accountId;
     private String historyMessage;
     private LocalDate historyDate;
     private double historyAmount;
 
-    public History(int historyId, String historyMessage, LocalDate historyDate, double historyAmount) {
+    public History(int historyId,int accountId, String historyMessage, LocalDate historyDate, double historyAmount) {
         this.historyId = historyId;
         this.historyMessage = historyMessage;
         this.historyDate = historyDate;
@@ -18,6 +19,14 @@ public class History {
     }
 
     public History() {
+    }
+
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
     public int getHistoryId() {

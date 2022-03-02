@@ -24,6 +24,15 @@ public class Account {
     public  Account() {
     }
 
+    public Account(int accountId, String accountFirstName, String accountLastName, String accountUserName, String accountPassword, double balance) {
+        this.accountId = accountId;
+        this.accountFirstName = accountFirstName;
+        this.accountLastName = accountLastName;
+        this.accountUserName = accountUserName;
+        this.accountPassword = accountPassword;
+        this.balance = balance;
+    }
+
     public void checkBalance(double money) throws NotEnoughBalanceException {
         if (money > balance) {
             throw new NotEnoughBalanceException();
